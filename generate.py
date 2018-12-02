@@ -167,7 +167,7 @@ def main(args):
             wps_meter.update(src_tokens.size(0))
             t.log({'wps': round(wps_meter.avg)})
             num_sentences += 1
-            print(json.dumps(d, ensure_ascii=False))
+            print(f'{sample_id}: {json.dumps(d, ensure_ascii=False)}')
 
     print('| Translated {} sentences ({} tokens) in {:.1f}s ({:.2f} sentences/s, {:.2f} tokens/s)'.format(
         num_sentences, gen_timer.n, gen_timer.sum, num_sentences / gen_timer.sum, 1. / gen_timer.avg))
