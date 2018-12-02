@@ -108,7 +108,7 @@ def main(args):
         )
 
         wps_meter = TimeMeter()
-        for (sample_id, src_tokens, target_tokens, hypos), ans_hypo in zip(translations, answers[3]):
+        for (sample_id, src_tokens, target_tokens, hypos), (_, _, _, ans_hypo) in zip(translations, answers):
             d = {}
             # Process input and ground truth
             has_target = target_tokens is not None
