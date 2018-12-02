@@ -28,21 +28,21 @@ def main(args):
 
     if args.max_tokens is None and args.max_sentences is None:
         args.max_tokens = 12000
-    print(args)
+    # print(args)
 
     use_cuda = torch.cuda.is_available() and not args.cpu
 
     # Load dataset splits
     task = tasks.setup_task(args)
     task.load_dataset(args.gen_subset)
-    print('| {} {} {} examples'.format(args.data, args.gen_subset, len(task.dataset(args.gen_subset))))
+    # print('| {} {} {} examples'.format(args.data, args.gen_subset, len(task.dataset(args.gen_subset))))
 
     # Set dictionaries
     src_dict = task.source_dictionary
     tgt_dict = task.target_dictionary
 
     # Load ensemble
-    print('| loading model(s) from {}'.format(args.path))
+    # print('| loading model(s) from {}'.format(args.path))
     models, _ = utils.load_ensemble_for_inference(args.path.split(':'), task, model_arg_overrides=eval(args.model_overrides))
 
     # Optimize ensemble for generation
@@ -102,8 +102,13 @@ def main(args):
                 cuda=use_cuda, timer=gen_timer, prefix_size=args.prefix_size,
             )
 
+        answers = translator.generate_batched_itr(
+            t, maxlen_a=args.max_len_a, maxlen_b=args.max_len_b,
+            cuda=use_cuda, timer=gen_timer, prefix_size=200,
+        )
+
         wps_meter = TimeMeter()
-        for sample_id, src_tokens, target_tokens, hypos in translations:
+        for (sample_id, src_tokens, target_tokens, hypos), ans_hypo in zip(translations, answers[3]):
             d = {}
             # Process input and ground truth
             has_target = target_tokens is not None
@@ -124,6 +129,8 @@ def main(args):
                 if has_target:
                     # print('T-{}\t{}'.format(sample_id, target_str)
                     d['target'] = target_str
+                    d['target_score'] = ans_hypo[0]['score']
+                    d['target_scores'] = ans_hypo[0]['positional_scores'].tolist()
 
             # Process top predictions
             d['hypos'] = []
@@ -167,12 +174,12 @@ def main(args):
             wps_meter.update(src_tokens.size(0))
             t.log({'wps': round(wps_meter.avg)})
             num_sentences += 1
-            print(f'{sample_id}: {json.dumps(d, ensure_ascii=False)}')
+            print(f'{{{sample_id}: {json.dumps(d, ensure_ascii=False)}}}')
 
-    print('| Translated {} sentences ({} tokens) in {:.1f}s ({:.2f} sentences/s, {:.2f} tokens/s)'.format(
-        num_sentences, gen_timer.n, gen_timer.sum, num_sentences / gen_timer.sum, 1. / gen_timer.avg))
-    if has_target:
-        print('| Generate {} with beam={}: {}'.format(args.gen_subset, args.beam, scorer.result_string()))
+    # print('| Translated {} sentences ({} tokens) in {:.1f}s ({:.2f} sentences/s, {:.2f} tokens/s)'.format(
+    #     num_sentences, gen_timer.n, gen_timer.sum, num_sentences / gen_timer.sum, 1. / gen_timer.avg))
+    # if has_target:
+        # print('| Generate {} with beam={}: {}'.format(args.gen_subset, args.beam, scorer.result_string()))
 
 
 if __name__ == '__main__':
