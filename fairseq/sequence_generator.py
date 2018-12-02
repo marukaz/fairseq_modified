@@ -44,6 +44,8 @@ class SequenceGenerator(object):
         self.len_penalty = len_penalty
         self.unk_penalty = unk_penalty
         self.retain_dropout = retain_dropout
+        # 正解文のidを引いてlprobsを修正するのに必要
+        self.tgt_dict = tgt_dict
 
         assert sampling_topk < 0 or sampling, '--sampling-topk requires --sampling'
 
@@ -61,7 +63,7 @@ class SequenceGenerator(object):
 
     def generate_batched_itr(
         self, data_itr, beam_size=None, maxlen_a=0.0, maxlen_b=None,
-        cuda=False, timer=None, prefix_size=0,
+        cuda=False, timer=None, prefix_size=0, target_perp=False,
     ):
         """Iterate over a batched dataset and yield individual translations.
         Args:
@@ -87,12 +89,14 @@ class SequenceGenerator(object):
             srclen = encoder_input['src_tokens'].size(1)
             if timer is not None:
                 timer.start()
+            # TODO: これを正解文に対してもやる必要がある
             with torch.no_grad():
                 hypos = self.generate(
                     encoder_input,
                     beam_size=beam_size,
                     maxlen=int(maxlen_a*srclen + maxlen_b),
                     prefix_tokens=s['target'][:, :prefix_size] if prefix_size > 0 else None,
+                    target=s['target'] if target_perp else None
                 )
             if timer is not None:
                 timer.stop(sum(len(h[0]['tokens']) for h in hypos))
@@ -102,7 +106,7 @@ class SequenceGenerator(object):
                 ref = utils.strip_pad(s['target'].data[i, :], self.pad) if s['target'] is not None else None
                 yield id, src, ref, hypos[i]
 
-    def generate(self, encoder_input, beam_size=None, maxlen=None, prefix_tokens=None):
+    def generate(self, encoder_input, beam_size=None, maxlen=None, prefix_tokens=None, target=None):
         """Generate a batch of translations.
 
         Args:
@@ -110,13 +114,14 @@ class SequenceGenerator(object):
                 model.encoder.forward
             beam_size: int overriding the beam size. defaults to
                 self.beam_size
-            max_len: maximum length of the generated sequence
+            maxlen: maximum length of the generated sequence
             prefix_tokens: force decoder to begin with these tokens
+            target: calculate reference's perplexity if true
         """
         with torch.no_grad():
-            return self._generate(encoder_input, beam_size, maxlen, prefix_tokens)
+            return self._generate(encoder_input, beam_size, maxlen, prefix_tokens, target)
 
-    def _generate(self, encoder_input, beam_size=None, maxlen=None, prefix_tokens=None):
+    def _generate(self, encoder_input, beam_size=None, maxlen=None, prefix_tokens=None, target=None):
         """See generate"""
         src_tokens = encoder_input['src_tokens']
         bsz, srclen = src_tokens.size()
@@ -315,11 +320,21 @@ class SequenceGenerator(object):
             eos_scores = buffer('eos_scores', type_of=scores)
             if step < maxlen:
                 if prefix_tokens is not None and step < prefix_tokens.size(1):
+                    # ビームサーチしたりするからひとつのソースに複数のlprobsが生まれているのを調整
                     probs_slice = lprobs.view(bsz, -1, lprobs.size(-1))[:, 0, :]
-                    cand_scores = torch.gather(
-                        probs_slice, dim=1,
-                        index=prefix_tokens[:, step].view(-1, 1).data
-                    ).expand(-1, cand_size)
+                    # TODO: スコアが累積していなかった問題を修正
+                    if step == 0:
+                        cand_scores = torch.gather(
+                            probs_slice, dim=1,
+                            index=prefix_tokens[:, step].view(-1, 1).data
+                        ).expand(-1, cand_size)
+                    else:
+                        prev_cand_scores = cand_scores
+                        cand_scores = torch.gather(
+                            probs_slice, dim=1,
+                            index=prefix_tokens[:, step].view(-1, 1).data
+                        ).expand(-1, cand_size).add_(prev_cand_scores)
+
                     cand_indices = prefix_tokens[:, step].view(-1, 1).expand(bsz, cand_size).data
                     cand_beams = torch.zeros_like(cand_indices)
                 else:
