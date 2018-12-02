@@ -9,6 +9,8 @@
 Translate pre-processed data with a trained model.
 """
 
+import json
+
 import torch
 
 from fairseq import bleu, data, options, progress_bar, tasks, tokenizer, utils
@@ -102,6 +104,7 @@ def main(args):
 
         wps_meter = TimeMeter()
         for sample_id, src_tokens, target_tokens, hypos in translations:
+            d = {}
             # Process input and ground truth
             has_target = target_tokens is not None
             target_tokens = target_tokens.int().cpu() if has_target else None
@@ -116,11 +119,14 @@ def main(args):
                     target_str = tgt_dict.string(target_tokens, args.remove_bpe, escape_unk=True)
 
             if not args.quiet:
-                print('S-{}\t{}'.format(sample_id, src_str))
+                # print('S-{}\t{}'.format(sample_id, src_str))
+                d['source'] = src_str
                 if has_target:
-                    print('T-{}\t{}'.format(sample_id, target_str))
+                    # print('T-{}\t{}'.format(sample_id, target_str)
+                    d['target'] = target_str
 
             # Process top predictions
+            d['hypos'] = []
             for i, hypo in enumerate(hypos[:min(len(hypos), args.nbest)]):
                 hypo_tokens, hypo_str, alignment = utils.post_process_prediction(
                     hypo_tokens=hypo['tokens'].int().cpu(),
@@ -132,14 +138,17 @@ def main(args):
                 )
 
                 if not args.quiet:
-                    print('H-{}\t{}\t{}'.format(sample_id, hypo['score'], hypo_str))
-                    print('P-{}\t{}'.format(
-                        sample_id,
-                        ' '.join(map(
-                            lambda x: '{:.4f}'.format(x),
-                            hypo['positional_scores'].tolist(),
-                        ))
-                    ))
+                    # print('H-{}\t{}\t{}'.format(sample_id, hypo['score'], hypo_str))
+                    d['hypos'].append({
+                        'score': hypo['score'], 'text': hypo_str, 'scores': hypo['positional_scores'].tolist(),
+                    })
+                    # print('P-{}\t{}'.format(
+                    #     sample_id,
+                    #     ' '.join(map(
+                    #         lambda x: '{:.4f}'.format(x),
+                    #         hypo['positional_scores'].tolist(),
+                    #     ))
+                    # ))
 
                     if args.print_alignment:
                         print('A-{}\t{}'.format(
@@ -158,6 +167,7 @@ def main(args):
             wps_meter.update(src_tokens.size(0))
             t.log({'wps': round(wps_meter.avg)})
             num_sentences += 1
+            print(json.dumps(d, ensure_ascii=False))
 
     print('| Translated {} sentences ({} tokens) in {:.1f}s ({:.2f} sentences/s, {:.2f} tokens/s)'.format(
         num_sentences, gen_timer.n, gen_timer.sum, num_sentences / gen_timer.sum, 1. / gen_timer.avg))
