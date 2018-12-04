@@ -131,7 +131,7 @@ def main(args):
                     # print('T-{}\t{}'.format(sample_id, target_str)
                     d['target'] = target_str
                     d['target_score'] = ans_hypo[0]['score']
-                    d['target_scores'] = ans_hypo[0]['positional_scores'].tolist()
+                    # d['target_scores'] = ans_hypo[0]['positional_scores'].tolist()
 
             # Process top predictions
             d['hypos'] = []
@@ -148,7 +148,7 @@ def main(args):
                 if not args.quiet:
                     # print('H-{}\t{}\t{}'.format(sample_id, hypo['score'], hypo_str))
                     d['hypos'].append({
-                        'score': hypo['score'], 'text': hypo_str, 'scores': hypo['positional_scores'].tolist(),
+                        'score': hypo['score'], 'text': hypo_str,  # 'scores': hypo['positional_scores'].tolist(),
                     })
                     # print('P-{}\t{}'.format(
                     #     sample_id,
