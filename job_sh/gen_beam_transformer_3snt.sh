@@ -1,13 +1,13 @@
 #!/bin/sh
 ## current working directory
 #$ -cwd
-#$ -l q_node=1
-#$ -l h_rt=01:00:00
-#$ -N beam
+#$ -l f_node=1
+#$ -l h_rt=24:00:00
+#$ -N beam_3snt
 #$ -m abe
 #$ -M kopamaru@gmail.com
-#$ -o o.beam
-#$ -e e.beam
+#$ -o o.beam_3snt
+#$ -e e.beam_3snt
 
 ## Initialize module command (don't remove)
 . /etc/profile.d/modules.sh
@@ -17,9 +17,10 @@ module load cudnn/7.3
 
 source ~/fairseq/venv/bin/activate
 
-beam=30; \
-python ~/fairseq/generate.py /gs/hs0/tga-nlp-titech/takase/headline/data/jnc_preprocessed4fairseq_bin/jnc_1snt_spm_headline/ \
---path /gs/hs0/tga-nlp-titech/takase/headline/exp/jnc_spm_fairseq_transformer_wmtendesetting/jnc_spm_1snt_dropout0.1_gpu4_updatefreq2/checkpoint_best.pt \
---batch-size 64 \
+beam=15; subset="train"; \
+python ~/fairseq/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_bin/ \
+--path /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_wmtset_d01_upfreq2/checkpoint_best.pt \
+--gen-subset ${subset} \
+--batch-size 128 \
 --beam ${beam} \
---nbest ${beam} | tee ~/fairseq/gen/beam${beam}_wmt_d01_gpu4_updatefreq2.out
+--nbest ${beam} | tee /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_wmtset_d01_upfreq2_gen/beam${beam}_from_${subset}_snt3_wmt_d01_gpu4_updatefreq2.out
