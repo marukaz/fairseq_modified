@@ -15,10 +15,10 @@
 module load cuda/9.0.176
 module load cudnn/7.3
 
-source ~/fairseq/venv/bin/activate
+source ~/fairseq_modified/venv/bin/activate
 
 beam=15; subset="train"; \
-python ~/fairseq/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_bin/ \
+python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_bin/ \
 --path /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_wmtset_d01_upfreq2/checkpoint_best.pt \
 --gen-subset ${subset} \
 --batch-size 128 \
