@@ -20,4 +20,6 @@ source ~/fairseq_modified/venv/bin/activate
 python ~/fairseq_modified/train.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_200k_test_bin/ \
 --arch fconv \
 --max-epoch 15 \
+--lr 0.25 \
+--clip-norm 0.1 \
 --save-dir /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_fconv_200k_test
