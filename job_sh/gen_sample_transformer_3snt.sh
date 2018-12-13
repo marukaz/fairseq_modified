@@ -18,7 +18,7 @@ module load cudnn/7.3
 source ~/fairseq_modified/venv/bin/activate
 
 
-beam=63; subset="test"; top=5; prefix=0; path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_wmtset_d01_upfreq2"; \
+beam=63; subset="test"; top=5; prefix=0; path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_200k_test_wmtset_d01_upfreq2"; \
 python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_200k_test_bin/ \
 --path ${path}/checkpoint_best.pt \
 --gen-subset ${subset} \
