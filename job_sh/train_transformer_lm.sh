@@ -19,7 +19,7 @@ source ~/fairseq_modified/venv/bin/activate
 
 python ~/fairseq_modified/train.py --task language_modeling /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_only_headline_200k_test_bin \
 --arch transformer_lm \
---max-epoch 15 \
+--max-epoch 20 \
 --lr 0.0005 --min-lr 1e-09 \
 --optimizer adam --adam-betas '(0.9, 0.98)' \
 --update-freq 2 \
