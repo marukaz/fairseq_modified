@@ -48,7 +48,6 @@ def main(args):
 
     # Optimize ensemble for generation
     for model in models:
-        model = nn.DataParallel(model)
         model.make_generation_fast_(
             beamable_mm_beam_size=None if args.no_beamable_mm else args.beam,
             need_attn=args.print_alignment,
@@ -74,6 +73,9 @@ def main(args):
         num_shards=args.num_shards,
         shard_id=args.shard_id,
     ).next_epoch_itr(shuffle=False)
+
+    for model in models:
+        model = nn.DataParallel(model)
 
     # Initialize generator
     gen_timer = StopwatchMeter()
