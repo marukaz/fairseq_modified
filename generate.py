@@ -12,6 +12,7 @@ Translate pre-processed data with a trained model.
 import json
 
 import torch
+import torch.nn as nn
 
 from fairseq import bleu, data, options, progress_bar, tasks, tokenizer, utils
 from fairseq.meters import StopwatchMeter, TimeMeter
@@ -47,6 +48,7 @@ def main(args):
 
     # Optimize ensemble for generation
     for model in models:
+        model = nn.DataParallel(model)
         model.make_generation_fast_(
             beamable_mm_beam_size=None if args.no_beamable_mm else args.beam,
             need_attn=args.print_alignment,
