@@ -17,7 +17,7 @@ module load cudnn/7.3
 
 source ~/fairseq_modified/venv/bin/activate
 
-beam=128; subset="test"; top=5; prefix=0; path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_fconv_200k_test"; \
+beam=128; subset="test"; top=3; prefix=2; path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_fconv_200k_test"; \
 python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_200k_test_bin/ \
 --path ${path}/checkpoint_best.pt \
 --gen-subset ${subset} \
