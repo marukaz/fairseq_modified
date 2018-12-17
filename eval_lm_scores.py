@@ -97,7 +97,7 @@ def main(parsed_args):
                     print('| Skipping tokens with inf scores:',
                           task.target_dictionary.string(hypo['tokens'][inf_scores.nonzero()]))
                     score = score[(~inf_scores).nonzero()]
-            print(sample_id, score)
+            print(sample_id.item(), score.item())
 
 
 if __name__ == '__main__':
