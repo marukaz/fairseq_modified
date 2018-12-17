@@ -51,6 +51,8 @@ def main(parsed_args):
 
     task = tasks.setup_task(parsed_args)
 
+    src_dict = task.source_dictionary
+
     # Load ensemble
     models, args = utils.load_ensemble_for_inference(parsed_args.path.split(':'), task,
                                                      model_arg_overrides=eval(parsed_args.model_overrides))
@@ -90,6 +92,7 @@ def main(parsed_args):
     with progress_bar.build_progress_bar(args, itr) as t:
         results = scorer.score_batched_itr(t, cuda=use_cuda)
         for sample_id, src_tokens, __, hypos in results:
+            src_str = src_dict.string(src_tokens, args.remove_bpe)
             for hypo in hypos:
                 score = hypo['score']
                 inf_scores = score.eq(float('inf')) | score.eq(float('-inf'))
@@ -97,7 +100,7 @@ def main(parsed_args):
                     print('| Skipping tokens with inf scores:',
                           task.target_dictionary.string(hypo['tokens'][inf_scores.nonzero()]))
                     score = score[(~inf_scores).nonzero()]
-            print(sample_id.item(), score.item())
+            print(f'{sample_id.item()}\t{src_str}\t{score.item()}')
 
 
 if __name__ == '__main__':
