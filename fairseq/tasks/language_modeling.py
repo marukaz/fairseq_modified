@@ -154,7 +154,7 @@ class LanguageModelingTask(FairseqTask):
                     break_mode=self.args.sample_break_mode, include_targets=True,
                 ))
 
-            print('| {} {} {} examples'.format(self.args.data, split_k, len(loaded_datasets[-1])))
+            # print('| {} {} {} examples'.format(self.args.data, split_k, len(loaded_datasets[-1])))
 
             if not combine:
                 break

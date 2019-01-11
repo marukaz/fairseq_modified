@@ -88,8 +88,8 @@ class TranslationTask(FairseqTask):
         assert src_dict.pad() == tgt_dict.pad()
         assert src_dict.eos() == tgt_dict.eos()
         assert src_dict.unk() == tgt_dict.unk()
-        print('| [{}] dictionary: {} types'.format(args.source_lang, len(src_dict)))
-        print('| [{}] dictionary: {} types'.format(args.target_lang, len(tgt_dict)))
+        # print('| [{}] dictionary: {} types'.format(args.source_lang, len(src_dict)))
+        # print('| [{}] dictionary: {} types'.format(args.target_lang, len(tgt_dict)))
 
         return cls(args, src_dict, tgt_dict)
 
@@ -139,7 +139,7 @@ class TranslationTask(FairseqTask):
                 src_datasets.append(indexed_dataset(prefix + src, self.src_dict))
                 tgt_datasets.append(indexed_dataset(prefix + tgt, self.tgt_dict))
 
-                print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
+                # print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
 
                 if not combine:
                     break
