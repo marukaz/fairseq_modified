@@ -138,10 +138,11 @@ def main(args):
                     # d['target_scores'] = ans_hypo[0]['positional_scores'].tolist()
 
             d['hypos'] = []
-            # 正解文を先頭にいれておく
-            d['hypos'].append({
-                'score': d['target_score'], 'text': target_str,  # 'scores': hypo['positional_scores'].tolist(),
-            })
+            # 正解文を先頭にいれる
+            if args.add_gold:
+                d['hypos'].append({
+                    'score': d['target_score'], 'text': target_str,  # 'scores': hypo['positional_scores'].tolist(),
+                })
             # Process top predictions
             for i, hypo in enumerate(hypos[:min(len(hypos), args.nbest)]):
                 hypo_tokens, hypo_str, alignment = utils.post_process_prediction(

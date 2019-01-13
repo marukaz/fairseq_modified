@@ -22,6 +22,7 @@ beam=31; subset="test"; prefix=0; \
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_100k_test_wmtset_d01_upfreq2"; \
 python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/100k_test_${range}_bin/ \
 --path ${path}/checkpoint_best.pt \
+--add-gold \
 --gen-subset ${subset} \
 --batch-size 63 \
 --beam ${beam} \
