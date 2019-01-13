@@ -17,7 +17,7 @@ module load cudnn/7.3
 
 source ~/fairseq_modified/venv/bin/activate
 
-python ~/fairseq_modified/train.py --task language_modeling /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_only_headline_200k_test_bin \
+python ~/fairseq_modified/train.py --task language_modeling /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_dbs63_tf_100ktest_bin/ \
 --arch transformer_lm \
 --max-epoch 20 \
 --lr 0.0005 --min-lr 1e-09 \
@@ -28,4 +28,4 @@ python ~/fairseq_modified/train.py --task language_modeling /gs/hs0/tga-nlp-tite
 --clip-norm 0.0 \
 --lr-scheduler inverse_sqrt --warmup-init-lr 1e-07 --warmup-updates 4000 \
 --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
---save-dir /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_tgt_transformer_lm_200k_test
+--save-dir /gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_tgt_transformer_lm_100k_test
