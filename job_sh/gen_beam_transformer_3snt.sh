@@ -21,7 +21,7 @@ beam=5; subset="valid"; \
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_100k_test_wmtset_d01_upfreq2"; \
 python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_100k_test_bin/ \
 --path ${path}/checkpoint_best.pt \
---gen_subset ${subset} \
+--gen-subset ${subset} \
 --batch-size 128 \
 --beam ${beam} \
 --nbest ${beam} > ${path}_gen/beam${beam}_from_${subset}.out
