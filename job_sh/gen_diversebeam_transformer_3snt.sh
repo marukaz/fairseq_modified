@@ -18,9 +18,9 @@ module load cudnn/7.3
 source ~/fairseq_modified/venv/bin/activate
 
 range="1-25000" \
-beam=31; subset="test"; prefix=0; \
+beam=31; subset="valid"; prefix=0; \
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_100k_test_wmtset_d01_upfreq2"; \
-python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/100k_test_${range}_bin/ \
+python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/100k_test_bin/ \
 --path ${path}/checkpoint_best.pt \
 --add-gold \
 --gen-subset ${subset} \
@@ -29,4 +29,4 @@ python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/100k
 --nbest ${beam} \
 --prefix-size ${prefix} \
 --diverse-beam-groups ${beam} \
-> ${path}_gen/dbs${beam}_from_${subset}_range_${range}.out
+> ${path}_gen/dbs${beam}_from_${subset}.out

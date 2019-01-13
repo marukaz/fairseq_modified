@@ -6,8 +6,8 @@
 #$ -N beam5_3snt
 #$ -m abe
 #$ -M kopamaru@gmail.com
-#$ -o o.beam5_3snt
-#$ -e e.beam5_3snt
+#$ -o o.beam32_3snt
+#$ -e e.beam32_3snt
 
 ## Initialize module command (don't remove)
 . /etc/profile.d/modules.sh
@@ -17,11 +17,11 @@ module load cudnn/7.3
 
 source ~/fairseq_modified/venv/bin/activate
 
-beam=5; subset="valid"; \
+beam=32; subset="valid"; \
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_100k_test_wmtset_d01_upfreq2"; \
 python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jnc_fairseq_3snt_100k_test_bin/ \
 --path ${path}/checkpoint_best.pt \
 --gen-subset ${subset} \
---batch-size 128 \
+--batch-size 64 \
 --beam ${beam} \
 --nbest ${beam} > ${path}_gen/beam${beam}_from_${subset}.out
