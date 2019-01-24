@@ -183,7 +183,7 @@ class IndexedCachedDatasetMod(IndexedDataset):
         a = np.empty(tensor_size, dtype=self.dtype)
         ptx = self.cache_index[i]
         np.copyto(a, self.cache[ptx : ptx + a.size])
-        value = torch.from_numpy(a[0:1])
+        value = a[0]
         item = torch.from_numpy(a[1:]).long()
         if self.fix_lua_indexing:
             item -= 1  # subtract 1 for 0-based indexing

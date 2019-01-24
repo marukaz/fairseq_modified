@@ -27,6 +27,7 @@ def collate(
         )
 
     id = torch.LongTensor([s['id'] for s in samples])
+    probs = torch.Tensor([s['prob'] for s in samples])
     src_tokens = merge('source', left_pad=left_pad_source)
     # sort by descending source length
     src_lengths = torch.LongTensor([s['source'].numel() for s in samples])
@@ -55,6 +56,7 @@ def collate(
 
     batch = {
         'id': id,
+        'probs': probs,
         'nsentences': len(samples),
         'ntokens': ntokens,
         'net_input': {
@@ -125,7 +127,7 @@ class LanguagePairDataset(FairseqDataset):
         self.append_eos_to_target = append_eos_to_target
 
     def __getitem__(self, index):
-        tgt_item = self.tgt[index] if self.tgt is not None else None
+        prob, tgt_item = self.tgt[index] if self.tgt is not None else None
         src_item = self.src[index]
         # Append EOS to end of tgt sentence if it does not have an EOS and remove
         # EOS from end of src sentence if it exists. This is useful when we use
@@ -145,6 +147,7 @@ class LanguagePairDataset(FairseqDataset):
             'id': index,
             'source': src_item,
             'target': tgt_item,
+            'prob': prob,
         }
 
     def __len__(self):
