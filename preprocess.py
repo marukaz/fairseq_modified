@@ -133,8 +133,8 @@ def main(args):
                                             offsets[worker_id],
                                             offsets[worker_id + 1]), callback=merge_result)
             pool.close()
-
-        ds = indexed_dataset.IndexedDatasetBuilder(dataset_dest_file(args, output_prefix, lang, 'bin'))
+        # dtype changed to float because of including probability feature in data (by matsumaru)
+        ds = indexed_dataset.IndexedDatasetBuilder(dataset_dest_file(args, output_prefix, lang, 'bin'), dtype='float')
         merge_result(Tokenizer.binarize(input_file, dict, lambda t: ds.add_item(t),
                                         offset=0, end=offsets[1]))
         if num_workers > 1:

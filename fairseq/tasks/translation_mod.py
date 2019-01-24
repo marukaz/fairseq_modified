@@ -12,13 +12,13 @@ import os
 from fairseq import options
 from fairseq.data import (
     data_utils, Dictionary, LanguagePairDataset, ConcatDataset,
-    IndexedRawTextDataset, IndexedCachedDataset, IndexedDataset
+    IndexedRawTextDataset, IndexedCachedDatasetMod, IndexedDataset
 )
 
 from . import FairseqTask, register_task
 
 
-@register_task('translation')
+@register_task('translation_mod')
 class TranslationTask(FairseqTask):
     """
     Translate from one (source) language to another (target) language.
@@ -112,7 +112,7 @@ class TranslationTask(FairseqTask):
             if self.args.raw_text:
                 return IndexedRawTextDataset(path, dictionary)
             elif IndexedDataset.exists(path):
-                return IndexedCachedDataset(path, fix_lua_indexing=True)
+                return IndexedCachedDatasetMod(path, fix_lua_indexing=True)
             return None
 
         src_datasets = []

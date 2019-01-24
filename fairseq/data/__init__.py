@@ -9,7 +9,10 @@ from .dictionary import Dictionary, TruncatedDictionary
 from .fairseq_dataset import FairseqDataset
 from .backtranslation_dataset import BacktranslationDataset
 from .concat_dataset import ConcatDataset
-from .indexed_dataset import IndexedDataset, IndexedCachedDataset, IndexedInMemoryDataset, IndexedRawTextDataset
+from .indexed_dataset import (
+    IndexedDataset, IndexedCachedDataset, IndexedCachedDatasetMod,
+    IndexedInMemoryDataset, IndexedRawTextDataset
+)
 from .language_pair_dataset import LanguagePairDataset
 from .monolingual_dataset import MonolingualDataset
 from .round_robin_zip_datasets import RoundRobinZipDatasets
@@ -32,6 +35,7 @@ __all__ = [
     'FairseqDataset',
     'GroupedIterator',
     'IndexedCachedDataset',
+    'IndexedCachedDatasetMod',
     'IndexedDataset',
     'IndexedInMemoryDataset',
     'IndexedRawTextDataset',
