@@ -12,7 +12,7 @@ import os
 from fairseq import options
 from fairseq.data import (
     data_utils, Dictionary, LanguagePairDataset, ConcatDataset,
-    IndexedRawTextDataset, IndexedCachedDatasetMod, IndexedDataset
+    IndexedRawTextDataset, IndexedCachedDataset, IndexedCachedDatasetMod, IndexedDataset
 )
 
 from . import FairseqTask, register_task
@@ -112,7 +112,7 @@ class TranslationTask(FairseqTask):
             if self.args.raw_text:
                 return IndexedRawTextDataset(path, dictionary)
             elif IndexedDataset.exists(path):
-                return IndexedCachedDatasetMod(path, fix_lua_indexing=True)
+                return IndexedCachedDataset(path, fix_lua_indexing=True)
             return None
 
         src_datasets = []
@@ -137,7 +137,7 @@ class TranslationTask(FairseqTask):
                         raise FileNotFoundError('Dataset not found: {} ({})'.format(split, data_path))
 
                 src_datasets.append(indexed_dataset(prefix + src, self.src_dict))
-                tgt_datasets.append(indexed_dataset(prefix + tgt, self.tgt_dict))
+                tgt_datasets.append(IndexedCachedDatasetMod(prefix + tgt, self.tgt_dict))
 
                 # print('| {} {} {} examples'.format(data_path, split_k, len(src_datasets[-1])))
 
