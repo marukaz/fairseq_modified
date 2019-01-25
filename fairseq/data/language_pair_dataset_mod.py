@@ -27,7 +27,7 @@ def collate(
         )
 
     id = torch.LongTensor([s['id'] for s in samples])
-    probs = torch.Tensor([s['prob'] for s in samples])
+    probs = torch.tensor([s['prob'] for s in samples])
     src_tokens = merge('source', left_pad=left_pad_source)
     # sort by descending source length
     src_lengths = torch.LongTensor([s['source'].numel() for s in samples])

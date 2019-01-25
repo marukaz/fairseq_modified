@@ -12,7 +12,7 @@ from fairseq import utils
 from . import FairseqCriterion, register_criterion
 
 
-@register_criterion('label_smoothed_cross_entropy')
+@register_criterion('label_smoothed_cross_entropy_mod')
 class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
 
     def __init__(self, args, task):
@@ -35,6 +35,7 @@ class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
         """
         net_output = model(**sample['net_input'])
         loss, nll_loss = self.compute_loss(model, net_output, sample, reduce=reduce)
+        loss = loss * sample['probs']
         sample_size = sample['target'].size(0) if self.args.sentence_avg else sample['ntokens']
         logging_output = {
             'loss': utils.item(loss.data) if reduce else loss.data,
@@ -52,11 +53,12 @@ class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
         non_pad_mask = target.ne(self.padding_idx)
         nll_loss = -lprobs.gather(dim=-1, index=target)[non_pad_mask]
         smooth_loss = -lprobs.sum(dim=-1, keepdim=True)[non_pad_mask]
-        if reduce:
-            nll_loss = nll_loss.sum()
-            smooth_loss = smooth_loss.sum()
         eps_i = self.eps / lprobs.size(-1)
         loss = (1. - self.eps) * nll_loss + eps_i * smooth_loss
+        loss = loss * sample['probs'].view(-1, 1)
+        if reduce:
+            loss = loss.sum()
+            nll_loss = nll_loss.sum()
         return loss, nll_loss
 
     @staticmethod
