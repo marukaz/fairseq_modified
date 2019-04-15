@@ -17,7 +17,7 @@ module load cudnn/7.3
 
 source ~/fairseq_modified/venv/bin/activate
 
-data="dbs31_100k_test_1-25000"
+data="dbs31_jamul"
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_tgt_transformer_lm_100k_test"; \
 python ~/fairseq_modified/eval_lm_scores.py /gs/hs0/tga-nlp-titech/matsumaru/data/${data}_bin \
 --path ${path}/checkpoint_best.pt \

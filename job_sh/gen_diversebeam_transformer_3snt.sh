@@ -3,11 +3,11 @@
 #$ -cwd
 #$ -l f_node=1
 #$ -l h_rt=24:00:00
-#$ -N dbs_3snt
+#$ -N dbs63_jamul
 #$ -m abe
 #$ -M kopamaru@gmail.com
-#$ -o o.no_prefix_dbs_3snt
-#$ -e e.no_prefix_dbs_3snt
+#$ -o o.dbs63_jamul
+#$ -e e.dbs63_jamul
 
 ## Initialize module command (don't remove)
 . /etc/profile.d/modules.sh
@@ -18,15 +18,15 @@ module load cudnn/7.3
 source ~/fairseq_modified/venv/bin/activate
 
 range="1-25000" \
-beam=31; subset="valid"; prefix=0; \
+beam=63; subset="test"; prefix=0; \
 path="/gs/hs0/tga-nlp-titech/matsumaru/entasum/fairseq_model/jnc_3snt_transformer_100k_test_wmtset_d01_upfreq2"; \
-python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/100k_test_bin/ \
---path ${path}/checkpoint_best.pt \
+python ~/fairseq_modified/generate.py /gs/hs0/tga-nlp-titech/matsumaru/data/jamul_test_bin/ \
 --add-gold \
+--path ${path}/checkpoint_best.pt \
 --gen-subset ${subset} \
---batch-size 63 \
+--batch-size 32 \
 --beam ${beam} \
 --nbest ${beam} \
 --prefix-size ${prefix} \
 --diverse-beam-groups ${beam} \
-> ${path}_gen/dbs${beam}_from_${subset}.out
+> ${path}_gen/dbs${beam}_from_${subset}_jamul.out
