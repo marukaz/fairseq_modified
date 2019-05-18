@@ -13,7 +13,7 @@ from . import FairseqCriterion, register_criterion
 
 
 @register_criterion('label_smoothed_cross_entropy_mod')
-class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
+class LabelSmoothedCrossEntropyCriterionMod(FairseqCriterion):
 
     def __init__(self, args, task):
         super().__init__(args, task)
