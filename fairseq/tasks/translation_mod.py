@@ -19,7 +19,7 @@ from . import FairseqTask, register_task
 
 
 @register_task('translation_mod')
-class TranslationTask(FairseqTask):
+class TranslationTaskMod(FairseqTask):
     """
     Translate from one (source) language to another (target) language.
 
